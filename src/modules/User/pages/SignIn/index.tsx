@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Button } from 'react-native-paper';
 
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
@@ -8,9 +9,11 @@ const SignIn: React.FC = () => {
   return (
     <View style={styles.container}>
       <Button
-        title="Cadastre-se"
-        onPress={() => navigation.navigate('SignUp')}
-      />
+        icon="camera"
+        accessibilityStates="Register"
+        onPress={() => navigation.navigate('SignUp')}>
+        Register
+      </Button>
     </View>
   );
 };
