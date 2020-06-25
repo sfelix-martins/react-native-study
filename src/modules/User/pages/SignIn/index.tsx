@@ -1,11 +1,11 @@
-import React, { useRef, useContext } from 'react';
-import { View, StyleSheet, TextInput as TextInputProps } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Button, TextInput, HelperText } from 'react-native-paper';
 import { Formik } from 'formik';
+import React, { useContext, useRef } from 'react';
+import { StyleSheet, TextInput as TextInputProps, View } from 'react-native';
+import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
 
-import { signIn } from '../../services/auth';
+import { useNavigation } from '@react-navigation/native';
+
 import AuthContext from '../../../../contexts/auth';
 
 interface SignInValues {
@@ -22,14 +22,12 @@ const SignIn: React.FC = () => {
   const passwordRef = useRef<TextInputProps>(null);
   const navigation = useNavigation();
 
-  const { signed, signIn } = useContext(AuthContext);
-
-  console.log(signed);
+  const { signIn } = useContext(AuthContext);
 
   const initialValues: SignInValues = { email: '', password: '' };
 
-  async function handleSignIn(values: SignInValues) {
-    signIn();
+  function handleSignIn(values: SignInValues) {
+    signIn(values);
   }
 
   return (

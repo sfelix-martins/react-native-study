@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
+import { View } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 
 import AuthContext from '../contexts/auth';
 import AppRoutes from './app.routes';
 import AuthRoutes from './auth.routes';
-import { View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 
 const Routes: React.FC = () => {
   const { signed, loading } = useContext(AuthContext);
