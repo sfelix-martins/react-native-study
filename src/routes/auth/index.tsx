@@ -8,7 +8,9 @@ const Auth = createStackNavigator();
 
 const AuthRoutes: React.FC = () => {
   return (
-    <Auth.Navigator initialRouteName="SignIn">
+    <Auth.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="SignIn">
       <Auth.Screen name="SignIn" component={SignIn} />
       <Auth.Screen name="SignUp" component={SignUp} />
     </Auth.Navigator>

@@ -6,10 +6,12 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import AuthRoutes from './routes/auth';
 import theme from './theme';
+import { StatusBar } from 'react-native';
 
 const App: React.FC = () => (
   <PaperProvider theme={theme}>
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
+      <StatusBar barStyle="light-content" />
       <AuthRoutes />
     </NavigationContainer>
   </PaperProvider>
