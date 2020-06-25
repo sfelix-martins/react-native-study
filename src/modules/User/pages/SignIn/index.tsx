@@ -1,13 +1,19 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, TextInput as TextInputProps } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, HelperText } from 'react-native-paper';
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 interface SignInValues {
   email: string;
   password: string;
 }
+
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('The email is required'),
+  password: Yup.string().required('The password is required'),
+});
 
 const SignIn: React.FC = () => {
   const passwordRef = useRef<TextInputProps>(null);
@@ -18,11 +24,20 @@ const SignIn: React.FC = () => {
   return (
     <Formik
       initialValues={intialValues}
+      validationSchema={SignInSchema}
       onSubmit={(values) => console.log('values', values)}>
-      {({ handleChange, handleBlur, handleSubmit, values }) => (
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+      }) => (
         <View style={styles.container}>
           <TextInput
             style={styles.fill}
+            error={!!errors.email && touched.email}
             value={values.email}
             onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
@@ -36,7 +51,12 @@ const SignIn: React.FC = () => {
             label="E-mail"
             onSubmitEditing={() => passwordRef.current?.focus()}
           />
+          {touched.email && errors.email && (
+            <HelperText type="error">{errors.email}</HelperText>
+          )}
+
           <TextInput
+            error={!!errors.password && touched.password}
             value={values.password}
             onChangeText={handleChange('password')}
             onBlur={handleBlur('password')}
@@ -49,6 +69,10 @@ const SignIn: React.FC = () => {
             accessibilityStates
             label="Password"
           />
+          {errors.password && touched.password && (
+            <HelperText type="error">{errors.password}</HelperText>
+          )}
+
           <Button
             style={styles.button}
             mode="contained"
