@@ -1,42 +1,26 @@
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
+import React from 'react';
 import ApolloClient from 'apollo-boost';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
 
 import { ApolloProvider } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 
-function makeApolloClient(token: string): ApolloClient<NormalizedCacheObject> {
-  return new ApolloClient({
-    uri: 'http://localhost:3000/graphql',
-    request: (operation) => {
-      operation.setContext({
-        headers: {
-          authorization: token ? `Bearer ${token}` : '',
-        },
-      });
-    },
-  });
-}
+const client = new ApolloClient({
+  uri: 'http://localhost:3000/graphql',
+  request: async (operation) => {
+    let token = await AsyncStorage.getItem('@Levare:token');
 
-const Apollo: React.FC = ({ children }) => {
-  const [client, setClient] = useState<ApolloClient<any> | null>(null);
+    operation.setContext({
+      headers: {
+        authorization: token ? `Bearer ${token}` : '',
+      },
+      // The context from operation override this context if needed
+      ...operation.getContext(),
+    });
+  },
+});
 
-  useEffect(() => {
-    async function fetchToken() {
-      const token = await AsyncStorage.getItem('@Levare:token');
-
-      setClient(makeApolloClient(token ?? ''));
-    }
-
-    fetchToken();
-  }, []);
-
-  if (!client) {
-    return <View />;
-  }
-
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
-};
+const Apollo: React.FC = ({ children }) => (
+  <ApolloProvider client={client}>{children}</ApolloProvider>
+);
 
 export default Apollo;

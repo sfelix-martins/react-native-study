@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 import {
-  getApolloContext,
   useLazyQuery,
   useMutation,
+  useApolloClient,
 } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -64,8 +64,7 @@ interface GetUserResult {
 }
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const Context = getApolloContext();
-  const { client } = useContext(Context);
+  const client = useApolloClient();
   const [user, setUser] = useState<User | undefined | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -77,9 +76,10 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadStorageData() {
-      // TODO: Change to multiget
-      const storagedUser = await AsyncStorage.getItem('@Levare:user');
-      const storagedToken = await AsyncStorage.getItem('@Levare:token');
+      const [
+        [, storagedUser],
+        [, storagedToken],
+      ] = await AsyncStorage.multiGet(['@Levare:user', '@Levare:token']);
 
       if (storagedToken && storagedUser) {
         setUser(JSON.parse(storagedUser));
@@ -97,10 +97,15 @@ export const AuthProvider: React.FC = ({ children }) => {
       if (accessToken) {
         await AsyncStorage.setItem('@Levare:token', accessToken);
 
-        // IMPORTANT: Reset store to set token on authorization headers
         await client?.resetStore();
 
-        getUser();
+        getUser({
+          context: {
+            headers: {
+              authorization: `Bearer ${accessToken}`,
+            },
+          },
+        });
       }
     }
 
@@ -127,7 +132,8 @@ export const AuthProvider: React.FC = ({ children }) => {
   }
 
   async function logout() {
-    await AsyncStorage.clear();
+    AsyncStorage.clear();
+    client.resetStore();
     setUser(null);
   }
 
