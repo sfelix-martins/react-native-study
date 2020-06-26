@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Text, View } from 'react-native';
 import { Button } from 'react-native-paper';
 
-import AuthContext from '../../contexts/auth';
+import { useAuth } from '../../contexts/auth';
 
 const Home: React.FC = () => {
-  const { logout, user } = useContext(AuthContext);
+  const { logout, user } = useAuth();
 
   return (
     <View>

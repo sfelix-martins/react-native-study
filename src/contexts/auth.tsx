@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import {
+  useApolloClient,
   useLazyQuery,
   useMutation,
-  useApolloClient,
 } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -146,3 +146,9 @@ export const AuthProvider: React.FC = ({ children }) => {
 };
 
 export default AuthContext;
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  return context;
+}
