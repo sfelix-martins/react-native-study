@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 interface AuthContextData {
   signed: boolean;
   user: User | undefined | null;
-  signIn(user: SignInVariables): Promise<void>;
+  signIn(user: SignInVariables): Promise<any>;
   logout(): Promise<void>;
   loading: boolean;
 }
@@ -128,7 +128,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, [userData]);
 
   async function signIn(variables: SignInVariables) {
-    signInMutation({ variables });
+    return await signInMutation({ variables });
   }
 
   async function logout() {

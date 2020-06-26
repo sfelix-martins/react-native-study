@@ -33,7 +33,10 @@ const SignIn: React.FC = () => {
     try {
       await signIn(values);
     } catch (err) {
-      console.log('err', err);
+      openDialog({
+        type: 'error',
+        message: 'Invalid credentials',
+      });
     }
   }
 
@@ -66,10 +69,7 @@ const SignIn: React.FC = () => {
               mode="outlined"
               accessibilityStates
               label="E-mail"
-              onSubmitEditing={() => {
-                passwordRef.current?.focus();
-                setDialogVisible(true);
-              }}
+              onSubmitEditing={() => passwordRef.current?.focus()}
             />
             {touched.email && errors.email && (
               <HelperText type="error">{errors.email}</HelperText>
