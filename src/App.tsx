@@ -6,11 +6,11 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import { NavigationContainer } from '@react-navigation/native';
 
-import ApolloProvider from './apollo';
+import ApolloProvider from './config/apollo';
 import { AuthProvider } from './contexts/auth';
 import ToastProvider from './contexts/toast';
 import Routes from './routes';
-import theme from './theme';
+import theme from './config/theme';
 
 const App: React.FC = () => (
   <PaperProvider theme={theme}>

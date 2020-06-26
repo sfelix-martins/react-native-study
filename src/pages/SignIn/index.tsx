@@ -6,8 +6,8 @@ import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { useAuth } from '../../../../contexts/auth';
-import { useToast } from '../../../../contexts/toast';
+import { useAuth } from '../../contexts/auth';
+import { useToast } from '../../contexts/toast';
 
 interface SignInValues {
   email: string;
@@ -100,7 +100,9 @@ const SignIn: React.FC = () => {
               onPress={handleSubmit}>
               Login
             </Button>
-            <Button accessibilityStates onPress={() => console.log('Pressed')}>
+            <Button
+              accessibilityStates
+              onPress={() => navigation.navigate('ForgotPassword')}>
               Recovery password
             </Button>
             <Button
