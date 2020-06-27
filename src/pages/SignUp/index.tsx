@@ -1,25 +1,23 @@
 import React from 'react';
-import { StatusBar, SafeAreaView } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { View, StatusBar } from 'react-native';
+import { Appbar } from 'react-native-paper';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import StepOne from './StepOne';
+import StepTwo from './StepTwo';
+
+const SignUpStepsStack = createStackNavigator();
 
 const SignUp: React.FC = () => {
-  const { colors } = useTheme();
-
   return (
-    <>
-      <StatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor={colors.primary}
-      />
-
-      {/* <Appbar.Header accessibilityStates>
-        <Appbar.BackAction
-          accessibilityStates
-          onPress={() => navigation.goBack()}
-        />
-      </Appbar.Header> */}
-    </>
+    <SignUpStepsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName="StepOne">
+      <SignUpStepsStack.Screen name="StepOne" component={StepOne} />
+      <SignUpStepsStack.Screen name="StepTwo" component={StepTwo} />
+    </SignUpStepsStack.Navigator>
   );
 };
 

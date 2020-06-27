@@ -20,19 +20,7 @@ const AuthRoutes: React.FC = () => {
         options={{ title: 'Login' }}
         component={SignIn}
       />
-      <AuthStack.Screen
-        name="SignUp"
-        options={{
-          title: 'Register',
-          headerShown: true,
-          headerBackTitleVisible: false,
-          headerStyle: {
-            backgroundColor: colors.primary,
-          },
-          headerTintColor: '#fff',
-        }}
-        component={SignUp}
-      />
+      <AuthStack.Screen name="SignUp" component={SignUp} />
       <AuthStack.Screen
         name="ForgotPassword"
         options={{
