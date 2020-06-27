@@ -1,8 +1,26 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StatusBar, SafeAreaView } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const SignUp: React.FC = () => {
-  return <View />;
+  const { colors } = useTheme();
+
+  return (
+    <>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor={colors.primary}
+      />
+
+      {/* <Appbar.Header accessibilityStates>
+        <Appbar.BackAction
+          accessibilityStates
+          onPress={() => navigation.goBack()}
+        />
+      </Appbar.Header> */}
+    </>
+  );
 };
 
 export default SignUp;

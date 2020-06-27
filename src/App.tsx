@@ -1,10 +1,9 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import { StatusBar, SafeAreaView, StyleSheet } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import { NavigationContainer, useTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 
 import ApolloProvider from './config/apollo';
 import { AuthProvider } from './contexts/auth';
@@ -12,33 +11,24 @@ import ToastProvider from './contexts/toast';
 import Routes from './routes';
 import theme from './config/theme';
 import GlobalLoaderProvider from './contexts/global-loader';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const App: React.FC = () => {
-  const { colors } = useTheme();
-
-  const styles = StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-  });
-
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer theme={theme}>
-        <GlobalLoaderProvider>
-          <ToastProvider>
-            <ApolloProvider>
-              <AuthProvider>
-                <StatusBar />
-                <SafeAreaView style={styles.safeArea}>
+      <SafeAreaProvider>
+        <NavigationContainer theme={theme}>
+          <GlobalLoaderProvider>
+            <ToastProvider>
+              <ApolloProvider>
+                <AuthProvider>
                   <Routes />
-                </SafeAreaView>
-              </AuthProvider>
-            </ApolloProvider>
-          </ToastProvider>
-        </GlobalLoaderProvider>
-      </NavigationContainer>
+                </AuthProvider>
+              </ApolloProvider>
+            </ToastProvider>
+          </GlobalLoaderProvider>
+        </NavigationContainer>
+      </SafeAreaProvider>
     </PaperProvider>
   );
 };
