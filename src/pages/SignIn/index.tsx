@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
-import ContainedButton from '../../components/Forms/ContainedButton';
+import { ContainedButton } from '../../components/Forms';
 
 import { useNavigation, useTheme } from '@react-navigation/native';
 
@@ -78,6 +78,8 @@ const SignIn: React.FC = () => {
             }) => (
               <View style={styles.form}>
                 <Image style={styles.logo} source={logo} />
+
+                {/*  TODO: Fix problem on events forwarding ref to componentize this input */}
                 <TextInput
                   style={styles.textInput}
                   error={!!errors.email && touched.email}
