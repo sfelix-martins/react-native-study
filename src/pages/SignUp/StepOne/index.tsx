@@ -11,6 +11,7 @@ import {
   FormContainer,
   StepperContainer,
 } from '../../../components/Forms';
+import { useSignUpStepper } from '../../../contexts/signup-steps';
 
 interface FormValues {
   firstName: string;
@@ -23,11 +24,14 @@ const FormSchema = Yup.object().shape({
 });
 
 const StepOne: React.FC = () => {
+  const { goToNextStep } = useSignUpStepper();
   const navigation = useNavigation();
 
   const lastNameRef = useRef<TextInputProps>(null);
 
-  function nextStep() {
+  function nextStep(values: FormValues) {
+    // TODO: Validate steps data on context or component??
+    goToNextStep(values);
     navigation.navigate('StepTwo');
   }
 
@@ -40,8 +44,7 @@ const StepOne: React.FC = () => {
           initialValues={intialValues}
           validationSchema={FormSchema}
           onSubmit={(values) => {
-            console.log('values', values);
-            nextStep();
+            nextStep(values);
           }}>
           {({
             handleChange,
