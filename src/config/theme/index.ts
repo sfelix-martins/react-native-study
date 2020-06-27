@@ -27,7 +27,7 @@ const fonts = configureFonts({
 });
 
 const theme: Theme = {
-  ...DarkTheme,
+  ...DefaultTheme,
   fonts,
 };
 
