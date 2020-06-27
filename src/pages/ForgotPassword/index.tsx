@@ -6,9 +6,10 @@ import {
   View,
   StatusBar,
 } from 'react-native';
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
 import { useTheme } from '@react-navigation/native';
+import ContainedButton from '../../components/Forms/ContainedButton';
 
 interface ForgotPasswordValues {
   email: string;
@@ -60,13 +61,9 @@ const ForgotPassword: React.FC = () => {
               <HelperText type="error">{errors.email}</HelperText>
             )}
 
-            <Button
-              style={styles.button}
-              mode="contained"
-              accessibilityStates="Login"
-              onPress={handleSubmit}>
+            <ContainedButton style={styles.button} onPress={handleSubmit}>
               Reset password
-            </Button>
+            </ContainedButton>
           </View>
         )}
       </Formik>
@@ -86,7 +83,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '100%',
     marginTop: 16,
     marginBottom: 16,
   },

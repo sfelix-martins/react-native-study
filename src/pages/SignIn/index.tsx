@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
+import ContainedButton from '../../components/Forms/ContainedButton';
 
 import { useNavigation, useTheme } from '@react-navigation/native';
 
@@ -115,13 +116,9 @@ const SignIn: React.FC = () => {
                   <HelperText type="error">{errors.password}</HelperText>
                 )}
 
-                <Button
-                  style={styles.button}
-                  mode="contained"
-                  accessibilityStates="Login"
-                  onPress={handleSubmit}>
+                <ContainedButton style={styles.button} onPress={handleSubmit}>
                   Login
-                </Button>
+                </ContainedButton>
                 <Button
                   accessibilityStates
                   onPress={() => navigation.navigate('ForgotPassword')}>
@@ -173,12 +170,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '100%',
     marginTop: 16,
     marginBottom: 16,
-    borderRadius: 50,
-    height: 50,
-    justifyContent: 'center',
   },
 });
 
