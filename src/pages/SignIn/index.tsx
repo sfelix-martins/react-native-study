@@ -2,24 +2,23 @@ import { Formik } from 'formik';
 import React, { useRef } from 'react';
 import {
   Dimensions,
-  Image,
   ScrollView,
+  StatusBar,
   StyleSheet,
   TextInput as TextInputProps,
   View,
-  StatusBar,
 } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
-import { ContainedButton } from '../../components/Forms';
 
 import { useNavigation, useTheme } from '@react-navigation/native';
 
-import logo from '../../assets/logo.png';
+import { ContainedButton } from '../../components/Forms';
+import Logo from '../../components/Logo';
 import { useAuth } from '../../contexts/auth';
-import { useToast } from '../../contexts/toast';
 import { useGlobalLoader } from '../../contexts/global-loader';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useToast } from '../../contexts/toast';
 
 interface SignInValues {
   email: string;
@@ -62,7 +61,7 @@ const SignIn: React.FC = () => {
   return (
     <SafeAreaView>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
           <Formik
             initialValues={initialValues}
@@ -77,7 +76,7 @@ const SignIn: React.FC = () => {
               touched,
             }) => (
               <View style={styles.form}>
-                <Image style={styles.logo} source={logo} />
+                <Logo style={styles.logo} />
 
                 {/*  TODO: Fix problem on events forwarding ref to componentize this input */}
                 <TextInput
@@ -149,9 +148,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flex: 1,
     padding: 24,
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
-    // backgroundColor: 'blue',
   },
   fill: {
     flex: 1,
