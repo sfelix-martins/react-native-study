@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/auth';
 import { useToast } from '../../contexts/toast';
+import { useGlobalLoader } from '../../contexts/global-loader';
 
 interface SignInValues {
   email: string;
@@ -28,6 +29,8 @@ const SignInSchema = Yup.object().shape({
 });
 
 const SignIn: React.FC = () => {
+  const { openGlobalLoader, closeGlobalLoader } = useGlobalLoader();
+
   const passwordRef = useRef<TextInputProps>(null);
   const navigation = useNavigation();
 
@@ -39,12 +42,15 @@ const SignIn: React.FC = () => {
 
   async function handleSignIn(values: SignInValues) {
     try {
+      openGlobalLoader();
       await signIn(values);
     } catch (err) {
       openDialog({
         type: 'error',
         message: 'Invalid credentials',
       });
+    } finally {
+      closeGlobalLoader();
     }
   }
 

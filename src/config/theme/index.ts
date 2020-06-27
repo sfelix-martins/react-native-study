@@ -1,9 +1,4 @@
-import {
-  DefaultTheme,
-  configureFonts,
-  Theme,
-  DarkTheme,
-} from 'react-native-paper';
+import { DefaultTheme, configureFonts, Theme } from 'react-native-paper';
 
 const fonts = configureFonts({
   default: {

@@ -11,6 +11,7 @@ import { AuthProvider } from './contexts/auth';
 import ToastProvider from './contexts/toast';
 import Routes from './routes';
 import theme from './config/theme';
+import GlobalLoaderProvider from './contexts/global-loader';
 
 const App: React.FC = () => {
   const { colors } = useTheme();
@@ -25,16 +26,18 @@ const App: React.FC = () => {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer theme={theme}>
-        <ToastProvider>
-          <ApolloProvider>
-            <AuthProvider>
-              <StatusBar />
-              <SafeAreaView style={styles.safeArea}>
-                <Routes />
-              </SafeAreaView>
-            </AuthProvider>
-          </ApolloProvider>
-        </ToastProvider>
+        <GlobalLoaderProvider>
+          <ToastProvider>
+            <ApolloProvider>
+              <AuthProvider>
+                <StatusBar />
+                <SafeAreaView style={styles.safeArea}>
+                  <Routes />
+                </SafeAreaView>
+              </AuthProvider>
+            </ApolloProvider>
+          </ToastProvider>
+        </GlobalLoaderProvider>
       </NavigationContainer>
     </PaperProvider>
   );
