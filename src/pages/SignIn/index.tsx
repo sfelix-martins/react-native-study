@@ -70,70 +70,78 @@ const SignIn: React.FC = () => {
             {({
               handleChange,
               handleBlur,
+              resetForm,
               handleSubmit,
               values,
               errors,
               touched,
             }) => (
-              <View style={styles.form}>
-                <Logo style={styles.logo} />
+              <>
+                <View style={styles.form}>
+                  <Logo style={styles.logo} />
 
-                {/*  TODO: Fix problem on events forwarding ref to componentize this input */}
-                <TextInput
-                  style={styles.textInput}
-                  error={!!errors.email && touched.email}
-                  value={values.email}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  keyboardAppearance="dark"
-                  returnKeyType="next"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  mode="outlined"
-                  accessibilityStates
-                  label="E-mail"
-                  onSubmitEditing={() => passwordRef.current?.focus()}
-                />
-                {touched.email && errors.email && (
-                  <HelperText type="error">{errors.email}</HelperText>
-                )}
+                  {/*  TODO: Fix problem on events forwarding ref to componentize this input */}
+                  <TextInput
+                    style={styles.textInput}
+                    error={!!errors.email && touched.email}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    keyboardAppearance="dark"
+                    returnKeyType="next"
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    mode="outlined"
+                    accessibilityStates
+                    label="E-mail"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                  />
+                  {touched.email && errors.email && (
+                    <HelperText type="error">{errors.email}</HelperText>
+                  )}
 
-                <TextInput
-                  error={!!errors.password && touched.password}
-                  value={values.password}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  style={styles.textInput}
-                  ref={passwordRef}
-                  keyboardAppearance="dark"
-                  returnKeyType="send"
-                  secureTextEntry={true}
-                  mode="outlined"
-                  accessibilityStates
-                  label="Password"
-                />
-                {errors.password && touched.password && (
-                  <HelperText type="error">{errors.password}</HelperText>
-                )}
+                  <TextInput
+                    error={!!errors.password && touched.password}
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    style={styles.textInput}
+                    ref={passwordRef}
+                    keyboardAppearance="dark"
+                    returnKeyType="send"
+                    secureTextEntry={true}
+                    mode="outlined"
+                    accessibilityStates
+                    label="Password"
+                  />
+                  {errors.password && touched.password && (
+                    <HelperText type="error">{errors.password}</HelperText>
+                  )}
 
-                <ContainedButton style={styles.button} onPress={handleSubmit}>
-                  Login
-                </ContainedButton>
+                  <ContainedButton style={styles.button} onPress={handleSubmit}>
+                    Login
+                  </ContainedButton>
+                  <Button
+                    accessibilityStates
+                    onPress={() => {
+                      resetForm();
+                      navigation.navigate('ForgotPassword');
+                    }}>
+                    Recovery password
+                  </Button>
+                </View>
                 <Button
                   accessibilityStates
-                  onPress={() => navigation.navigate('ForgotPassword')}>
-                  Recovery password
+                  onPress={() => {
+                    resetForm();
+                    navigation.navigate('SignUp');
+                  }}>
+                  Register
                 </Button>
-              </View>
+              </>
             )}
           </Formik>
-
-          <Button
-            accessibilityStates
-            onPress={() => navigation.navigate('SignUp')}>
-            Register
-          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -9,14 +9,21 @@ interface User {
   contactLink?: string;
   company?: string;
   phone?: string;
+  isCertified: boolean;
   avatar?: string;
 }
 
 type StepOneData = Pick<User, 'firstName' | 'lastName'>;
-type StepTwoData = Pick<User, 'firstName' | 'lastName'>;
+type StepTwoData = Pick<User, 'email' | 'password'>;
+type StepThreeData = Pick<
+  User,
+  'contactLink' | 'company' | 'phone' | 'isCertified'
+>;
+
+type StepData = StepOneData | StepTwoData | StepThreeData;
 
 interface SignUpStepsData {
-  goToNextStep(data: StepOneData): void;
+  goToNextStep(data: StepData): void;
 }
 
 const SignUpStepsContext = createContext<SignUpStepsData>(
@@ -31,7 +38,7 @@ const SignUpStepsProvider: React.FC = ({ children }) => {
     console.log('user', user);
   }, [user]);
 
-  function goToNextStep(data: StepOneData) {
+  function goToNextStep(data: StepOneData | StepTwoData) {
     if (user) {
       setUser({ ...user, ...data });
       return;

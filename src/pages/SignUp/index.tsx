@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { createStackNavigator } from '@react-navigation/stack';
-import StepOne from './StepOne';
-import StepTwo from './StepTwo';
+
 import SignUpStepsProvider from '../../contexts/signup-steps';
+import StepOne from './StepOne';
+import StepThree from './StepThree';
+import StepTwo from './StepTwo';
 
 const SignUpStepsStack = createStackNavigator();
 
@@ -16,6 +19,7 @@ const SignUp: React.FC = () => {
         initialRouteName="StepOne">
         <SignUpStepsStack.Screen name="StepOne" component={StepOne} />
         <SignUpStepsStack.Screen name="StepTwo" component={StepTwo} />
+        <SignUpStepsStack.Screen name="StepThree" component={StepThree} />
       </SignUpStepsStack.Navigator>
     </SignUpStepsProvider>
   );
