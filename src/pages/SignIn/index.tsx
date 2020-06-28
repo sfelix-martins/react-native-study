@@ -30,6 +30,9 @@ const SignInSchema = Yup.object().shape({
   password: Yup.string().required('The password is required'),
 });
 
+/**
+ * @deprecated Use more performatic SignInUnform component
+ */
 const SignIn: React.FC = () => {
   const { colors } = useTheme();
 
@@ -80,7 +83,6 @@ const SignIn: React.FC = () => {
                 <View style={styles.form}>
                   <Logo style={styles.logo} />
 
-                  {/*  TODO: Fix problem on events forwarding ref to componentize this input */}
                   <TextInput
                     style={styles.textInput}
                     error={!!errors.email && touched.email}

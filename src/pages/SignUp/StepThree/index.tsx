@@ -1,17 +1,6 @@
 import React, { useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput as TextInputProps,
-  CheckBoxProps,
-} from 'react-native';
-import {
-  TextInput,
-  HelperText,
-  Checkbox,
-  Switch,
-  Text,
-} from 'react-native-paper';
+import { View, StyleSheet, TextInput as TextInputProps } from 'react-native';
+import { TextInput, HelperText, Switch, Text } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 
