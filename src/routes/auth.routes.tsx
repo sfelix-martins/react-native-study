@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { createStackNavigator } from '@react-navigation/stack';
-import SignIn from '../pages/SignIn';
+// import SignIn from '../pages/SignInFormik';
 import SignUp from '../pages/SignUp';
-import SignInUnform from '../pages/SignUpUnform';
+import SignIn from '../pages/SignIn';
 import ForgotPassword from '../pages/ForgotPassword';
 import { useTheme } from '@react-navigation/native';
 
@@ -19,7 +19,7 @@ const AuthRoutes: React.FC = () => {
       <AuthStack.Screen
         name="SignIn"
         options={{ title: 'Login' }}
-        component={SignInUnform}
+        component={SignIn}
       />
       <AuthStack.Screen name="SignUp" component={SignUp} />
       <AuthStack.Screen

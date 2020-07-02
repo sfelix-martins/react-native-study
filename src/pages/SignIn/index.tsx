@@ -1,5 +1,4 @@
-import { Formik } from 'formik';
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -8,17 +7,20 @@ import {
   TextInput as TextInputProps,
   View,
 } from 'react-native';
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 
 import { useNavigation, useTheme } from '@react-navigation/native';
+import { FormHandles } from '@unform/core';
+import { Form } from '@unform/mobile';
 
-import { ContainedButton } from '../../components/Forms';
+import { ContainedButton, Input } from '../../components/Forms';
 import Logo from '../../components/Logo';
 import { useAuth } from '../../contexts/auth';
 import { useGlobalLoader } from '../../contexts/global-loader';
 import { useToast } from '../../contexts/toast';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 interface SignInValues {
   email: string;
@@ -30,9 +32,6 @@ const SignInSchema = Yup.object().shape({
   password: Yup.string().required('The password is required'),
 });
 
-/**
- * @deprecated Use more performatic SignInUnform component
- */
 const SignIn: React.FC = () => {
   const { colors } = useTheme();
 
@@ -40,110 +39,119 @@ const SignIn: React.FC = () => {
 
   const passwordRef = useRef<TextInputProps>(null);
   const navigation = useNavigation();
+  const formRef = useRef<FormHandles>(null);
 
   const { openDialog } = useToast();
 
   const { signIn } = useAuth();
 
-  const initialValues: SignInValues = { email: '', password: '' };
+  const handleBlur = useCallback((field: string) => {
+    validateField(field, formRef.current?.getFieldValue(field));
+  }, []);
 
-  async function handleSignIn(values: SignInValues) {
+  const handleChangeText = useCallback((field: string, value: string) => {
+    validateField(field, value);
+  }, []);
+
+  async function validateField(field: string, value: string) {
     try {
-      openGlobalLoader();
-      await signIn(values);
-    } catch (err) {
-      openDialog({
-        type: 'error',
-        message: 'Invalid credentials',
+      await Yup.reach(SignInSchema, field).validate(value);
+
+      formRef.current?.setErrors({
+        ...formRef.current.getErrors(),
+        [field]: undefined,
       });
-    } finally {
-      closeGlobalLoader();
+    } catch (err) {
+      const error = err as Yup.ValidationError;
+
+      formRef.current?.setFieldError(field, error.message);
     }
   }
+
+  const handleSignIn = useCallback(
+    async (values: SignInValues) => {
+      try {
+        await SignInSchema.validate(values, {
+          abortEarly: false,
+        });
+
+        openGlobalLoader();
+        await signIn(values);
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        openDialog({
+          type: 'error',
+          message: 'Invalid credentials',
+        });
+      } finally {
+        closeGlobalLoader();
+      }
+    },
+    [closeGlobalLoader, openDialog, openGlobalLoader, signIn],
+  );
 
   return (
     <SafeAreaView>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={SignInSchema}
-            onSubmit={handleSignIn}>
-            {({
-              handleChange,
-              handleBlur,
-              resetForm,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-            }) => (
-              <>
-                <View style={styles.form}>
-                  <Logo style={styles.logo} />
-
-                  <TextInput
-                    style={styles.textInput}
-                    error={!!errors.email && touched.email}
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    keyboardAppearance="dark"
-                    returnKeyType="next"
-                    autoCorrect={false}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    mode="outlined"
-                    accessibilityStates
-                    label="E-mail"
-                    onSubmitEditing={() => passwordRef.current?.focus()}
-                  />
-                  {touched.email && errors.email && (
-                    <HelperText type="error">{errors.email}</HelperText>
-                  )}
-
-                  <TextInput
-                    error={!!errors.password && touched.password}
-                    value={values.password}
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    style={styles.textInput}
-                    ref={passwordRef}
-                    keyboardAppearance="dark"
-                    returnKeyType="send"
-                    secureTextEntry={true}
-                    mode="outlined"
-                    accessibilityStates
-                    label="Password"
-                  />
-                  {errors.password && touched.password && (
-                    <HelperText type="error">{errors.password}</HelperText>
-                  )}
-
-                  <ContainedButton style={styles.button} onPress={handleSubmit}>
-                    Login
-                  </ContainedButton>
-                  <Button
-                    accessibilityStates
-                    onPress={() => {
-                      resetForm();
-                      navigation.navigate('ForgotPassword');
-                    }}>
-                    Recovery password
-                  </Button>
-                </View>
-                <Button
-                  accessibilityStates
-                  onPress={() => {
-                    resetForm();
-                    navigation.navigate('SignUp');
-                  }}>
-                  Register
-                </Button>
-              </>
-            )}
-          </Formik>
+          <Form style={styles.form} ref={formRef} onSubmit={handleSignIn}>
+            <Logo style={styles.logo} />
+            <Input
+              onBlur={() => handleBlur('email')}
+              onChangeText={(value) => handleChangeText('email', value)}
+              name="email"
+              label="E-mail"
+              style={styles.textInput}
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              autoCorrect={false}
+              mode="outlined"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onSubmitEditing={() => passwordRef.current?.focus()}
+            />
+            <Input
+              onBlur={() => handleBlur('password')}
+              onChangeText={(value) => handleChangeText('password', value)}
+              ref={passwordRef}
+              mode="outlined"
+              label="Password"
+              style={styles.textInput}
+              secureTextEntry
+              keyboardAppearance="dark"
+              returnKeyType="send"
+              name="password"
+            />
+            <ContainedButton
+              style={styles.button}
+              onPress={() => {
+                formRef.current?.submitForm();
+              }}>
+              Login
+            </ContainedButton>
+            <Button
+              accessibilityStates
+              onPress={() => {
+                formRef.current?.reset();
+                navigation.navigate('ForgotPassword');
+              }}>
+              Recovery password
+            </Button>
+          </Form>
+          <Button
+            accessibilityStates
+            onPress={() => {
+              navigation.navigate('SignUp');
+            }}>
+            Register
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -161,7 +169,6 @@ const styles = StyleSheet.create({
   },
   fill: {
     flex: 1,
-    backgroundColor: 'red',
     width: '100%',
     height: '100%',
   },
