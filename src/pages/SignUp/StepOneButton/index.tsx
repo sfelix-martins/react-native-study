@@ -45,7 +45,7 @@ const StepOne: React.FC = () => {
     if (hasNotch()) {
       Animated.timing(paddingAnimation, {
         toValue: 44,
-        duration: 300,
+        duration: 250,
         easing: Easing.linear,
         useNativeDriver: false,
       }).start();
@@ -55,7 +55,7 @@ const StepOne: React.FC = () => {
     if (hasNotch()) {
       Animated.timing(paddingAnimation, {
         toValue: 0,
-        duration: 300,
+        duration: 250,
         easing: Easing.linear,
         useNativeDriver: false,
       }).start();
@@ -143,6 +143,7 @@ const StepOne: React.FC = () => {
         <Animated.View
           style={{
             flex: 1,
+            // Animation for fake SafeAreaView paddingBottom
             paddingBottom: paddingAnimation,
           }}>
           <SafeAreaView
