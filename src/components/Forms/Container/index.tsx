@@ -7,14 +7,16 @@ const Container: React.FC = ({ children }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.flex}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-      <ScrollView
+    <>
+      {/* <SafeAreaView style={styles.flex}> */}
+      {/* <StatusBar barStyle="light-content" backgroundColor={colors.primary} /> */}
+      {/* <ScrollView
         contentContainerStyle={styles.flex}
-        keyboardShouldPersistTaps="handled">
-        {children}
-      </ScrollView>
-    </SafeAreaView>
+        keyboardShouldPersistTaps="handled"> */}
+      {children}
+      {/* </ScrollView> */}
+      {/* </SafeAreaView> */}
+    </>
   );
 };
 

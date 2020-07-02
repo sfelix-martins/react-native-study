@@ -18,7 +18,6 @@ const ContainedButton: React.FC<MaterialButtonProps> = ({ style, ...rest }) => {
 const styles = StyleSheet.create({
   button: {
     width: '100%',
-    borderRadius: 50,
     height: 50,
     justifyContent: 'center',
   },
