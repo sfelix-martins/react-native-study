@@ -35,15 +35,7 @@ const StepTwo: React.FC = () => {
     navigation.navigate('StepThree');
   }
 
-  const handleBlur = useCallback((field: string) => {
-    validateField(field, formRef.current?.getFieldValue(field));
-  }, []);
-
-  const handleChangeText = useCallback((field: string, value: string) => {
-    validateField(field, value);
-  }, []);
-
-  async function validateField(field: string, value: string) {
+  const validateField = useCallback(async (field: string, value: string) => {
     try {
       await Yup.reach(FormSchema, field).validate(value);
 
@@ -56,7 +48,21 @@ const StepTwo: React.FC = () => {
 
       formRef.current?.setFieldError(field, error.message);
     }
-  }
+  }, []);
+
+  const handleBlur = useCallback(
+    (field: string) => {
+      validateField(field, formRef.current?.getFieldValue(field));
+    },
+    [validateField],
+  );
+
+  const handleChangeText = useCallback(
+    (field: string, value: string) => {
+      validateField(field, value);
+    },
+    [validateField],
+  );
 
   return (
     <StepperContainer onNext={() => formRef.current?.submitForm()}>
@@ -89,67 +95,6 @@ const StepTwo: React.FC = () => {
           onSubmitEditing={() => formRef.current?.submitForm()}
         />
       </Form>
-      {/* <FormContainer>
-        <Formik
-          initialValues={intialValues}
-          validationSchema={FormSchema}
-          onSubmit={(values) => {
-            nextStep(values);
-          }}>
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View style={{ flex: 1, padding: 24 }}>
-              <View style={styles.container}>
-                <TextInput
-                  style={styles.fill}
-                  error={!!errors.email && touched.email}
-                  value={values.email}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  returnKeyType="next"
-                  autoCapitalize="none"
-                  mode="outlined"
-                  accessibilityStates
-                  keyboardType="email-address"
-                  label="E-mail"
-                  onSubmitEditing={() => passwordRef.current?.focus()}
-                />
-                {touched.email && errors.email && (
-                  <HelperText type="error">{errors.email}</HelperText>
-                )}
-
-                <TextInput
-                  ref={passwordRef}
-                  style={styles.fill}
-                  error={!!errors.password && touched.password}
-                  value={values.password}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  returnKeyType="send"
-                  autoCapitalize="none"
-                  secureTextEntry
-                  mode="outlined"
-                  accessibilityStates
-                  label="Password"
-                  onSubmitEditing={handleSubmit}
-                />
-                {touched.password && errors.password && (
-                  <HelperText type="error">{errors.password}</HelperText>
-                )}
-              </View>
-              <ContainedButton style={styles.button} onPress={handleSubmit}>
-                Next
-              </ContainedButton>
-            </View>
-          )}
-        </Formik>
-      </FormContainer> */}
     </StepperContainer>
   );
 };
