@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import React from 'react';
+import * as Yup from 'yup';
 
 interface User {
   firstName: string;
@@ -23,7 +24,17 @@ type StepThreeData = Pick<
 type StepData = StepOneData | StepTwoData | StepThreeData;
 
 interface SignUpStepsData {
-  goToNextStep(data: StepData): void;
+  /**
+   * Check if user can go to next step according to validationSchema and store
+   * data on provider state if has no errors.
+   *
+   * @throws Yup.ValidationError
+   */
+  goToNextStep(data: StepData): Promise<void>;
+  /**
+   * Set an Yup validation schema to use on validate on goToNextStep() call.
+   */
+  setValidationSchema(schema: Yup.Schema<any> | null): void;
 }
 
 const SignUpStepsContext = createContext<SignUpStepsData>(
@@ -33,12 +44,21 @@ const SignUpStepsContext = createContext<SignUpStepsData>(
 // TODO: Validate steps data on context or component??
 const SignUpStepsProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [validationSchema, setValidationSchema] = useState<Yup.Schema<
+    any
+  > | null>(null);
 
   useEffect(() => {
     console.log('user', user);
   }, [user]);
 
-  function goToNextStep(data: StepOneData | StepTwoData) {
+  async function goToNextStep(data: StepOneData | StepTwoData) {
+    if (validationSchema) {
+      await validationSchema.validate(data, {
+        abortEarly: false,
+      });
+    }
+
     if (user) {
       setUser({ ...user, ...data });
       return;
@@ -47,7 +67,7 @@ const SignUpStepsProvider: React.FC = ({ children }) => {
   }
 
   return (
-    <SignUpStepsContext.Provider value={{ goToNextStep }}>
+    <SignUpStepsContext.Provider value={{ goToNextStep, setValidationSchema }}>
       {children}
     </SignUpStepsContext.Provider>
   );
