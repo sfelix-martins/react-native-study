@@ -86,6 +86,7 @@ const StepTwo: React.FC = () => {
     <StepperContainer onNext={() => formRef.current?.submitForm()}>
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
+          autoFocus
           onBlur={() => handleBlur('email')}
           onChangeText={(value) => handleChangeText('email', value)}
           name="email"

@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import React from 'react';
 import * as Yup from 'yup';
 
@@ -35,6 +41,7 @@ interface SignUpStepsData {
    * Set an Yup validation schema to use on validate on goToNextStep() call.
    */
   setValidationSchema(schema: Yup.Schema<any> | null): void;
+  finishSignUp(): Promise<void>;
 }
 
 const SignUpStepsContext = createContext<SignUpStepsData>(
@@ -52,22 +59,28 @@ const SignUpStepsProvider: React.FC = ({ children }) => {
     console.log('user', user);
   }, [user]);
 
-  async function goToNextStep(data: StepOneData | StepTwoData) {
-    if (validationSchema) {
-      await validationSchema.validate(data, {
-        abortEarly: false,
-      });
-    }
+  const finishSignUp = useCallback(async () => {}, []);
 
-    if (user) {
-      setUser({ ...user, ...data });
-      return;
-    }
-    setUser(data as User);
-  }
+  const goToNextStep = useCallback(
+    async (data: StepData) => {
+      if (validationSchema) {
+        await validationSchema.validate(data, {
+          abortEarly: false,
+        });
+      }
+
+      if (user) {
+        setUser({ ...user, ...data });
+        return;
+      }
+      setUser(data as User);
+    },
+    [user, validationSchema],
+  );
 
   return (
-    <SignUpStepsContext.Provider value={{ goToNextStep, setValidationSchema }}>
+    <SignUpStepsContext.Provider
+      value={{ goToNextStep, finishSignUp, setValidationSchema }}>
       {children}
     </SignUpStepsContext.Provider>
   );

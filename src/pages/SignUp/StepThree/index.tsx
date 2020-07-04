@@ -10,6 +10,7 @@ import { Form } from '@unform/mobile';
 import { Input, StepperContainer, Switch } from '../../../components/Forms';
 import { useSignUpStepper } from '../../../contexts/signup-steps';
 import getValidationErrors from '../../../utils/getValidationErrors';
+import { useGlobalLoader } from '../../../contexts/global-loader';
 
 interface FormValues {
   contactLink?: string;
@@ -26,7 +27,13 @@ const FormSchema = Yup.object().shape({
 });
 
 const StepThree: React.FC = () => {
-  const { goToNextStep, setValidationSchema } = useSignUpStepper();
+  const {
+    goToNextStep,
+    setValidationSchema,
+    finishSignUp,
+  } = useSignUpStepper();
+
+  const { openGlobalLoader, closeGlobalLoader } = useGlobalLoader();
 
   const [hasPhoneError, setHasPhoneError] = useState(false);
   const [hasAreaCodeError, setHasAreaCodeError] = useState(false);
@@ -47,7 +54,12 @@ const StepThree: React.FC = () => {
 
         await goToNextStep(data);
 
-        console.log('Data', data);
+        openGlobalLoader();
+        await finishSignUp();
+
+        closeGlobalLoader();
+
+        navigation.navigate('SignIn');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -57,10 +69,14 @@ const StepThree: React.FC = () => {
           return;
         }
       }
-
-      // navigation.navigate('StepTwo');
     },
-    [goToNextStep],
+    [
+      closeGlobalLoader,
+      finishSignUp,
+      goToNextStep,
+      navigation,
+      openGlobalLoader,
+    ],
   );
 
   const validateField = useCallback(async (field: string, value: string) => {
@@ -108,6 +124,7 @@ const StepThree: React.FC = () => {
     <StepperContainer onNext={() => formRef.current?.submitForm()}>
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
+          autoFocus
           onBlur={() => handleBlur('contactLink')}
           onChangeText={(value) => handleChangeText('contactLink', value)}
           name="contactLink"

@@ -38,7 +38,6 @@ const Container: React.FC<StepperContainerProps> = ({ onNext, children }) => {
 
   if (Platform.OS === 'ios') {
     Keyboard.addListener('keyboardWillHide', () => {
-      console.log('keyboardWillHide');
       if (hasSafeAreaOnBottom) {
         Animated.timing(paddingAnimation, {
           toValue: safeAreaViewBottomPadding,
@@ -49,7 +48,6 @@ const Container: React.FC<StepperContainerProps> = ({ onNext, children }) => {
       }
     });
     Keyboard.addListener('keyboardWillShow', () => {
-      console.log('keyboardWillShow');
       if (hasSafeAreaOnBottom) {
         Animated.timing(paddingAnimation, {
           toValue: 0,
