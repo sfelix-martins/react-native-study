@@ -1,16 +1,25 @@
 import React, {
-  useEffect,
-  useRef,
-  useImperativeHandle,
   forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
 } from 'react';
-import { useField } from '@unform/core';
-import { TextInput, Theme, HelperText } from 'react-native-paper';
-import { TextInputProps } from 'react-native-paper/lib/typescript/src/components/TextInput/TextInput';
+import {
+  TextInputMask,
+  TextInputMaskOptionProp,
+  TextInputMaskTypeProp,
+} from 'react-native-masked-text';
+import { HelperText, TextInput, Theme } from 'react-native-paper';
+import { TextInputProps as PaperTextInputProps } from 'react-native-paper/lib/typescript/src/components/TextInput/TextInput';
 
-interface InputProps extends Omit<TextInputProps, 'theme'> {
+import { useField } from '@unform/core';
+
+interface InputProps extends Omit<PaperTextInputProps, 'theme'> {
   name: string;
   theme?: Theme;
+  showErrorMessage?: boolean;
+  maskType?: TextInputMaskTypeProp;
+  maskOptions?: TextInputMaskOptionProp;
 }
 
 interface InputValueReference {
@@ -22,17 +31,35 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-  { name, onChangeText, ...rest },
+  {
+    name,
+    onChangeText,
+    maskType,
+    maskOptions,
+    showErrorMessage = true,
+    ...rest
+  },
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
 
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
+  let maskedFieldRef: any | null = null;
 
   useImperativeHandle(ref, () => ({
     focus() {
       inputElementRef.current.focus();
+    },
+  }));
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      if (maskedFieldRef) {
+        maskedFieldRef.getElement().focus();
+      } else {
+        inputElementRef.current.focus();
+      }
     },
   }));
 
@@ -52,6 +79,22 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     });
   }, [fieldName, registerField]);
 
+  let render;
+  if (maskType) {
+    render = (props: any) => (
+      <TextInputMask
+        {...props}
+        includeRawValueInChangeText={true}
+        type={maskType}
+        options={maskOptions}
+        ref={(ref) => (maskedFieldRef = ref)}
+        onChangeText={(value, raw) => {
+          props.onChangeText(raw);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <TextInput
@@ -61,6 +104,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
+        render={render}
         onChangeText={(value) => {
           inputValueRef.current.value = value;
           if (onChangeText) {
@@ -69,7 +113,9 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         }}
         {...rest}
       />
-      {error && <HelperText type="error">{error}</HelperText>}
+      {error && showErrorMessage && (
+        <HelperText type="error">{error}</HelperText>
+      )}
     </>
   );
 };

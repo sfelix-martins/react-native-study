@@ -24,6 +24,10 @@ const fonts = configureFonts({
 const theme: Theme = {
   ...DefaultTheme,
   fonts,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#2EC625',
+  },
 };
 
 export default theme;
