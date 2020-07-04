@@ -1,14 +1,14 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { StyleSheet, TextInput as TextInputProps } from 'react-native';
-
-import { useNavigation } from '@react-navigation/native';
-
 import * as Yup from 'yup';
 
-import { StepperContainer, Input } from '../../../components/Forms';
-import { useSignUpStepper } from '../../../contexts/signup-steps';
-import { Form } from '@unform/mobile';
+import { useNavigation } from '@react-navigation/native';
 import { FormHandles } from '@unform/core';
+import { Form } from '@unform/mobile';
+
+import { Input, StepperContainer } from '../../../components/Forms';
+import { useSignUpStepper } from '../../../contexts/signup-steps';
+import getValidationErrors from '../../../utils/getValidationErrors';
 
 interface FormValues {
   email: string;
@@ -24,16 +24,34 @@ const FormSchema = Yup.object().shape({
 });
 
 const StepTwo: React.FC = () => {
-  const { goToNextStep } = useSignUpStepper();
+  const { goToNextStep, setValidationSchema } = useSignUpStepper();
   const formRef = useRef<FormHandles>(null);
   const passwordRef = useRef<TextInputProps>(null);
 
   const navigation = useNavigation();
 
-  function nextStep(data: FormValues) {
-    goToNextStep(data);
-    navigation.navigate('StepThree');
-  }
+  useEffect(() => setValidationSchema(FormSchema), [setValidationSchema]);
+
+  const nextStep = useCallback(
+    async (data: FormValues) => {
+      try {
+        formRef.current?.setErrors({});
+
+        await goToNextStep(data);
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+      }
+
+      navigation.navigate('StepThree');
+    },
+    [goToNextStep, navigation],
+  );
 
   const validateField = useCallback(async (field: string, value: string) => {
     try {

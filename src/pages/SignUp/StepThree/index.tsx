@@ -1,14 +1,15 @@
-import React, { useRef, useCallback } from 'react';
-import { StyleSheet, TextInput as TextInputProps } from 'react-native';
-
-import { useNavigation } from '@react-navigation/native';
-
+import React, { useCallback, useEffect, useRef } from 'react';
+import { StyleSheet, TextInput as TextInputProps, View } from 'react-native';
 import * as Yup from 'yup';
 
-import { StepperContainer, Input } from '../../../components/Forms';
-import { useSignUpStepper } from '../../../contexts/signup-steps';
-import { Form } from '@unform/mobile';
+import { useNavigation } from '@react-navigation/native';
 import { FormHandles } from '@unform/core';
+import { Form } from '@unform/mobile';
+
+import { Input, StepperContainer } from '../../../components/Forms';
+import Switch from '../../../components/Forms/Switch';
+import { useSignUpStepper } from '../../../contexts/signup-steps';
+import getValidationErrors from '../../../utils/getValidationErrors';
 
 interface FormValues {
   contactLink?: string;
@@ -20,22 +21,42 @@ interface FormValues {
 const FormSchema = Yup.object().shape({
   contactLink: Yup.string().url('The contact link must to be a valid url'),
   company: Yup.string().max(50, 'The company must have until 10 characters'),
-  phone: Yup.string().min(10),
+  phone: Yup.string().nullable(),
 });
 
 const StepThree: React.FC = () => {
-  const { goToNextStep } = useSignUpStepper();
+  const { goToNextStep, setValidationSchema } = useSignUpStepper();
+
   const formRef = useRef<FormHandles>(null);
   const companyRef = useRef<TextInputProps>(null);
   const phoneRef = useRef<TextInputProps>(null);
 
   const navigation = useNavigation();
 
-  function nextStep(data: FormValues) {
-    console.log('Data', data);
-    goToNextStep(data);
-    // navigation.navigate('StepFour');
-  }
+  useEffect(() => setValidationSchema(FormSchema), [setValidationSchema]);
+
+  const nextStep = useCallback(
+    async (data: FormValues) => {
+      try {
+        formRef.current?.setErrors({});
+
+        await goToNextStep(data);
+
+        console.log('Data', data);
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+      }
+
+      // navigation.navigate('StepTwo');
+    },
+    [goToNextStep],
+  );
 
   const validateField = useCallback(async (field: string, value: string) => {
     try {
@@ -108,11 +129,9 @@ const StepThree: React.FC = () => {
           mode="outlined"
           onSubmitEditing={() => phoneRef.current?.focus()}
         />
-        {/* <Switch style={{ marginRight: 16 }}
-        accessibilityStates onValueChange=
-        {() => setFieldValue('isCertified', !values.isCertified)}
-        value={values.isCertified}
-        /> */}
+        <View style={styles.switch}>
+          <Switch name="isCertified">I'm certifed</Switch>
+        </View>
       </Form>
     </StepperContainer>
   );
@@ -136,11 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   switch: {
-    width: '100%',
-    marginTop: 16,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 8,
   },
 });
 

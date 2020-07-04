@@ -3,7 +3,7 @@ import { StyleSheet, TextInput as TextInputProps, View } from 'react-native';
 import * as Yup from 'yup';
 
 import { useNavigation } from '@react-navigation/native';
-import { FormHandles, UnformErrors } from '@unform/core';
+import { FormHandles } from '@unform/core';
 import { Form } from '@unform/mobile';
 
 import { Input, StepperContainer } from '../../../components/Forms';
@@ -28,28 +28,28 @@ const StepOne: React.FC = () => {
 
   const lastNameRef = useRef<TextInputProps>(null);
 
-  useEffect(() => {
-    setValidationSchema(FormSchema);
-  }, [setValidationSchema]);
+  useEffect(() => setValidationSchema(FormSchema), [setValidationSchema]);
 
-  async function nextStep(data: FormValues) {
-    try {
-      formRef.current?.setErrors({});
+  const nextStep = useCallback(
+    async (data: FormValues) => {
+      try {
+        formRef.current?.setErrors({});
 
-      await goToNextStep(data);
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
+        await goToNextStep(data);
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
 
-        formRef.current?.setErrors(errors);
+          formRef.current?.setErrors(errors);
 
-        return;
+          return;
+        }
       }
-    }
 
-    // goToNextStep(values);
-    navigation.navigate('StepTwo');
-  }
+      navigation.navigate('StepTwo');
+    },
+    [goToNextStep, navigation],
+  );
 
   const handleBlur = useCallback((field: string) => {
     validateField(field, formRef.current?.getFieldValue(field));
