@@ -1,21 +1,26 @@
 import React, { useRef } from 'react';
 import {
-  StatusBar,
+  Animated,
+  Easing,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Animated,
   ScrollView,
-  View,
+  StatusBar,
   StyleSheet,
-  Keyboard,
-  Easing,
+  View,
   ViewProperties,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { Appbar, useTheme } from 'react-native-paper';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import ContainedButton from '../../ContainedButton';
-import { hasNotch } from 'react-native-device-info';
 
 interface StepperContainerProps extends ViewProperties {
   onNext(): void;
@@ -23,31 +28,38 @@ interface StepperContainerProps extends ViewProperties {
 
 const Container: React.FC<StepperContainerProps> = ({ onNext, children }) => {
   const navigation = useNavigation();
+  const { bottom: safeAreaViewBottomPadding } = useSafeAreaInsets();
+
+  const hasSafeAreaOnBottom = safeAreaViewBottomPadding > 0;
 
   const { colors } = useTheme();
-  const paddingAnimation = useRef(new Animated.Value(hasNotch() ? 44 : 0))
+  const paddingAnimation = useRef(new Animated.Value(safeAreaViewBottomPadding))
     .current;
 
-  Keyboard.addListener('keyboardWillHide', () => {
-    if (hasNotch()) {
-      Animated.timing(paddingAnimation, {
-        toValue: 44,
-        duration: 250,
-        easing: Easing.linear,
-        useNativeDriver: false,
-      }).start();
-    }
-  });
-  Keyboard.addListener('keyboardWillShow', () => {
-    if (hasNotch()) {
-      Animated.timing(paddingAnimation, {
-        toValue: 0,
-        duration: 250,
-        easing: Easing.linear,
-        useNativeDriver: false,
-      }).start();
-    }
-  });
+  if (Platform.OS === 'ios') {
+    Keyboard.addListener('keyboardWillHide', () => {
+      console.log('keyboardWillHide');
+      if (hasSafeAreaOnBottom) {
+        Animated.timing(paddingAnimation, {
+          toValue: safeAreaViewBottomPadding,
+          duration: 250,
+          easing: Easing.linear,
+          useNativeDriver: false,
+        }).start();
+      }
+    });
+    Keyboard.addListener('keyboardWillShow', () => {
+      console.log('keyboardWillShow');
+      if (hasSafeAreaOnBottom) {
+        Animated.timing(paddingAnimation, {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.linear,
+          useNativeDriver: false,
+        }).start();
+      }
+    });
+  }
 
   return (
     <>
@@ -64,15 +76,30 @@ const Container: React.FC<StepperContainerProps> = ({ onNext, children }) => {
           style={[
             styles.animatedView,
             {
+              backgroundColor: colors.background,
               // Animation for fake SafeAreaView paddingBottom
               paddingBottom: paddingAnimation,
             },
           ]}>
-          <SafeAreaView style={styles.safeAreaView}>
+          <SafeAreaView
+            style={[
+              styles.safeAreaView,
+              {
+                paddingBottom: -safeAreaViewBottomPadding,
+              },
+            ]}>
             <ScrollView style={styles.scrollView}>{children}</ScrollView>
+            {Platform.OS === 'android' && (
+              <LinearGradient
+                style={styles.linearGradient}
+                colors={[colors.background, '#0000001A']}
+              />
+            )}
             <View
               style={[
-                styles.buttonContainer,
+                Platform.OS === 'ios'
+                  ? styles.buttonContainerIOS
+                  : styles.buttonContainerAndroid,
                 { backgroundColor: colors.background },
               ]}>
               <ContainedButton onPress={onNext}>Next</ContainedButton>
@@ -109,10 +136,13 @@ const styles = StyleSheet.create({
   },
   safeAreaView: {
     flex: 1,
-    // Remove safe area view bottom length to use from aninated view.
-    paddingBottom: -44,
   },
-  buttonContainer: {
+
+  linearGradient: {
+    paddingTop: 8,
+    paddingHorizontal: 8,
+  },
+  buttonContainerIOS: {
     padding: 16,
 
     shadowRadius: 5,
@@ -124,6 +154,9 @@ const styles = StyleSheet.create({
     elevation: 10,
 
     shadowOpacity: 0.1,
+  },
+  buttonContainerAndroid: {
+    padding: 16,
   },
 });
 
