@@ -39,6 +39,8 @@ const StepThree: React.FC = () => {
 
   const { openGlobalLoader, closeGlobalLoader } = useGlobalLoader();
 
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [areaCodeTouched, setAreaCodeTouched] = useState(false);
   const [hasPhoneError, setHasPhoneError] = useState(false);
   const [hasAreaCodeError, setHasAreaCodeError] = useState(false);
 
@@ -165,7 +167,10 @@ const StepThree: React.FC = () => {
               showErrorMessage={false}
               name="areaCode"
               label="DDD"
-              onBlur={() => handleBlur('areaCode')}
+              onBlur={() => {
+                setAreaCodeTouched(true);
+                handleBlur('areaCode');
+              }}
               onChangeText={(value) => {
                 handleChangeText('areaCode', value);
                 if (value.length === 2) {
@@ -190,7 +195,10 @@ const StepThree: React.FC = () => {
               }}
               showErrorMessage={false}
               ref={phoneRef}
-              onBlur={() => handleBlur('phone')}
+              onBlur={() => {
+                setPhoneTouched(true);
+                handleBlur('phone');
+              }}
               onChangeText={(value) => {
                 handleChangeText('phone', value);
               }}
@@ -204,7 +212,8 @@ const StepThree: React.FC = () => {
             />
           </View>
         </View>
-        {(hasPhoneError || hasAreaCodeError) && (
+        {((hasPhoneError && phoneTouched) ||
+          (hasAreaCodeError && areaCodeTouched)) && (
           <HelperText type="error">Type a valid phone number</HelperText>
         )}
 

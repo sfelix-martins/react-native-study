@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -35,6 +35,8 @@ const SignInSchema = Yup.object().shape({
 const SignIn: React.FC = () => {
   const { colors } = useTheme();
 
+  const [emailTouched, setEmailTouched] = useState(false);
+
   const { openGlobalLoader, closeGlobalLoader } = useGlobalLoader();
 
   const passwordRef = useRef<TextInputProps>(null);
@@ -47,6 +49,9 @@ const SignIn: React.FC = () => {
 
   const handleBlur = useCallback((field: string) => {
     validateField(field, formRef.current?.getFieldValue(field));
+    if (field === 'email') {
+      setEmailTouched(true);
+    }
   }, []);
 
   const handleChangeText = useCallback((field: string, value: string) => {

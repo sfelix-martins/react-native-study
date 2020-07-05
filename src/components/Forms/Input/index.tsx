@@ -3,7 +3,9 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
+import { NativeSyntheticEvent, TextInputFocusEventData } from 'react-native';
 import {
   TextInputMask,
   TextInputMaskOptionProp,
@@ -34,14 +36,18 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   {
     name,
     onChangeText,
+    onBlur,
     maskType,
     maskOptions,
     showErrorMessage = true,
+    // touched,
     ...rest
   },
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
+
+  const [touched, setTouched] = useState(false);
 
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
@@ -98,13 +104,19 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   return (
     <>
       <TextInput
-        error={!!error}
+        error={!!error && touched}
         accessibilityStates
         ref={inputElementRef}
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
         render={render}
+        onBlur={(e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+          setTouched(true);
+          if (onBlur) {
+            onBlur(e);
+          }
+        }}
         onChangeText={(value) => {
           inputValueRef.current.value = value;
           if (onChangeText) {
@@ -113,7 +125,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         }}
         {...rest}
       />
-      {error && showErrorMessage && (
+      {error && touched && showErrorMessage && (
         <HelperText type="error">{error}</HelperText>
       )}
     </>
