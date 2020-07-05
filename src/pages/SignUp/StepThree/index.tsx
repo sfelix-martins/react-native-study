@@ -8,19 +8,23 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/mobile';
 
 import { Input, StepperContainer, Switch } from '../../../components/Forms';
-import { useSignUpStepper } from '../../../contexts/signup-steps';
+import {
+  useSignUpStepper,
+  StepThreeData,
+} from '../../../contexts/signup-steps';
 import getValidationErrors from '../../../utils/getValidationErrors';
 import { useGlobalLoader } from '../../../contexts/global-loader';
 
 interface FormValues {
-  contactLink?: string;
+  site?: string;
   company?: string;
+  areaCode?: string;
   phone?: string;
-  isCertified: boolean;
+  certified: boolean;
 }
 
 const FormSchema = Yup.object().shape({
-  contactLink: Yup.string().url('The contact link must to be a valid url'),
+  site: Yup.string().url('The contact link must to be a valid url'),
   company: Yup.string().max(50, 'The company must have until 10 characters'),
   areaCode: Yup.string().max(2).min(2).nullable(),
   phone: Yup.string().max(9).min(9).nullable(),
@@ -49,15 +53,18 @@ const StepThree: React.FC = () => {
 
   const nextStep = useCallback(
     async (data: FormValues) => {
+      const stepData: StepThreeData = {
+        ...data,
+        whatsapp: `${data.areaCode}${data.phone}`,
+      };
+
       try {
         formRef.current?.setErrors({});
 
-        await goToNextStep(data);
+        await goToNextStep(stepData);
 
         openGlobalLoader();
         await finishSignUp();
-
-        closeGlobalLoader();
 
         navigation.navigate('SignIn');
       } catch (err) {
@@ -68,6 +75,8 @@ const StepThree: React.FC = () => {
 
           return;
         }
+      } finally {
+        closeGlobalLoader();
       }
     },
     [
@@ -125,9 +134,9 @@ const StepThree: React.FC = () => {
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
           autoFocus
-          onBlur={() => handleBlur('contactLink')}
-          onChangeText={(value) => handleChangeText('contactLink', value)}
-          name="contactLink"
+          onBlur={() => handleBlur('site')}
+          onChangeText={(value) => handleChangeText('site', value)}
+          name="site"
           label="Contact link"
           style={styles.textInput}
           returnKeyType="next"
@@ -200,7 +209,7 @@ const StepThree: React.FC = () => {
         )}
 
         <View style={styles.switch}>
-          <Switch name="isCertified">I'm certifed</Switch>
+          <Switch name="certified">I'm certifed</Switch>
         </View>
       </Form>
     </StepperContainer>

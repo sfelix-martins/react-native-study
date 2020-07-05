@@ -7,24 +7,26 @@ import {
 } from 'react';
 import React from 'react';
 import * as Yup from 'yup';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 
 interface User {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  contactLink?: string;
+  site?: string;
   company?: string;
-  phone?: string;
-  isCertified: boolean;
+  whatsapp?: string;
+  certified: boolean;
   avatar?: string;
 }
 
 type StepOneData = Pick<User, 'firstName' | 'lastName'>;
 type StepTwoData = Pick<User, 'email' | 'password'>;
-type StepThreeData = Pick<
+export type StepThreeData = Pick<
   User,
-  'contactLink' | 'company' | 'phone' | 'isCertified'
+  'site' | 'company' | 'whatsapp' | 'certified'
 >;
 
 type StepData = StepOneData | StepTwoData | StepThreeData;
@@ -48,6 +50,43 @@ const SignUpStepsContext = createContext<SignUpStepsData>(
   {} as SignUpStepsData,
 );
 
+const SIGN_UP = gql`
+  mutation createUser(
+    $email: String!
+    $password: String!
+    $firstName: String!
+    $lastName: String!
+    $company: String
+    $site: String
+    $whatsapp: String
+    $certified: Boolean
+    $avatar: String
+  ) {
+    createUser(
+      data: {
+        email: $email
+        password: $password
+        firstName: $firstName
+        lastName: $lastName
+        company: $company
+        site: $site
+        whatsapp: $whatsapp
+        avatar: $avatar
+        certified: $certified
+      }
+    ) {
+      id
+      firstName
+    }
+  }
+`;
+
+interface SignUpResult {
+  createUser: User;
+}
+
+interface SignUpVariables extends User {}
+
 // TODO: Validate steps data on context or component??
 const SignUpStepsProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -55,11 +94,13 @@ const SignUpStepsProvider: React.FC = ({ children }) => {
     any
   > | null>(null);
 
-  useEffect(() => {
-    console.log('user', user);
-  }, [user]);
+  const [signUpMutation] = useMutation<SignUpResult, SignUpVariables>(SIGN_UP);
 
-  const finishSignUp = useCallback(async () => {}, []);
+  const finishSignUp = useCallback(async () => {
+    if (user) {
+      await signUpMutation({ variables: user });
+    }
+  }, [signUpMutation, user]);
 
   const goToNextStep = useCallback(
     async (data: StepData) => {
