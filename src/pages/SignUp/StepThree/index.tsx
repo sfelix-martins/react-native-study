@@ -191,6 +191,17 @@ const StepThree: React.FC = () => {
                   phoneRef.current?.focus();
                 }
               }}
+              onKeyPress={({ nativeEvent }) => {
+                const areaCodeValue: string = formRef.current?.getFieldValue(
+                  'areaCode',
+                );
+                if (
+                  areaCodeValue.length === 2 &&
+                  nativeEvent.key !== 'Backspace'
+                ) {
+                  phoneRef.current?.focus();
+                }
+              }}
               maxLength={2}
               returnKeyType="next"
               keyboardType="phone-pad"
@@ -202,6 +213,7 @@ const StepThree: React.FC = () => {
           </View>
           <View style={styles.phoneNumber}>
             <Input
+              ref={phoneRef}
               maskType="cel-phone"
               submitted={submitted}
               maskOptions={{
@@ -216,11 +228,17 @@ const StepThree: React.FC = () => {
 
                   if (phoneValue.length === 0) {
                     areaCodeRef.current?.focus();
+                    const areaCodeValueLessLastChar: string = formRef.current
+                      ?.getFieldValue('areaCode')
+                      .slice(0, -1);
+                    formRef.current?.setFieldValue(
+                      'areaCode',
+                      areaCodeValueLessLastChar,
+                    );
                   }
                 }
               }}
               showErrorMessage={false}
-              ref={phoneRef}
               onBlur={() => {
                 setPhoneTouched(true);
                 handleBlur('phone');
