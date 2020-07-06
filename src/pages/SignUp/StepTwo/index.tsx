@@ -96,6 +96,7 @@ const StepTwo: React.FC = () => {
           onChangeText={(value) => handleChangeText('email', value)}
           name="email"
           label="E-mail"
+          blurOnSubmit={false}
           style={styles.textInput}
           returnKeyType="next"
           autoCorrect={false}
@@ -113,6 +114,7 @@ const StepTwo: React.FC = () => {
           name="password"
           label="Password"
           secureTextEntry
+          blurOnSubmit={false}
           style={styles.textInput}
           returnKeyType="send"
           autoCorrect={false}

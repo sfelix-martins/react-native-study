@@ -148,6 +148,7 @@ const StepThree: React.FC = () => {
         <Input
           autoFocus
           submitted={submitted}
+          blurOnSubmit={false}
           onBlur={() => handleBlur('site')}
           onChangeText={(value) => handleChangeText('site', value)}
           name="site"
@@ -163,6 +164,7 @@ const StepThree: React.FC = () => {
         <Input
           ref={companyRef}
           submitted={submitted}
+          blurOnSubmit={false}
           onBlur={() => handleBlur('company')}
           onChangeText={(value) => handleChangeText('company', value)}
           name="company"
@@ -179,6 +181,7 @@ const StepThree: React.FC = () => {
               ref={areaCodeRef}
               submitted={submitted}
               showErrorMessage={false}
+              blurOnSubmit={false}
               name="areaCode"
               label="DDD"
               onBlur={() => {

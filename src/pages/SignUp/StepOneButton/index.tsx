@@ -88,6 +88,7 @@ const StepOne: React.FC = () => {
           onChangeText={(value) => handleChangeText('firstName', value)}
           name="firstName"
           label="First Name"
+          blurOnSubmit={false}
           style={styles.textInput}
           returnKeyType="next"
           autoCorrect={false}
@@ -105,6 +106,7 @@ const StepOne: React.FC = () => {
           label="Last Name"
           style={styles.textInput}
           returnKeyType="send"
+          blurOnSubmit={false}
           autoCorrect={false}
           mode="outlined"
           autoCapitalize="words"
