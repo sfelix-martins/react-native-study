@@ -22,6 +22,7 @@ interface InputProps extends Omit<PaperTextInputProps, 'theme'> {
   showErrorMessage?: boolean;
   maskType?: TextInputMaskTypeProp;
   maskOptions?: TextInputMaskOptionProp;
+  submitted?: boolean;
 }
 
 interface InputValueReference {
@@ -40,7 +41,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     maskType,
     maskOptions,
     showErrorMessage = true,
-    // touched,
+    submitted = false,
     ...rest
   },
   ref,
@@ -104,7 +105,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   return (
     <>
       <TextInput
-        error={!!error && touched}
+        error={!!error && (touched || submitted)}
         accessibilityStates
         ref={inputElementRef}
         keyboardAppearance="dark"
@@ -125,7 +126,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         }}
         {...rest}
       />
-      {error && touched && showErrorMessage && (
+      {error && (touched || submitted) && showErrorMessage && (
         <HelperText type="error">{error}</HelperText>
       )}
     </>

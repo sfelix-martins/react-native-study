@@ -23,6 +23,8 @@ const FormSchema = Yup.object().shape({
 const StepOne: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
+  const [submitted, setSubmitted] = useState(false);
+
   const { goToNextStep, setValidationSchema } = useSignUpStepper();
   const navigation = useNavigation();
 
@@ -38,6 +40,8 @@ const StepOne: React.FC = () => {
         await goToNextStep(data);
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
+          setSubmitted(true);
+
           const errors = getValidationErrors(err);
 
           formRef.current?.setErrors(errors);
@@ -78,6 +82,7 @@ const StepOne: React.FC = () => {
     <StepperContainer onNext={() => formRef.current?.submitForm()}>
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
+          submitted={submitted}
           autoFocus
           onBlur={() => handleBlur('firstName')}
           onChangeText={(value) => handleChangeText('firstName', value)}
@@ -92,6 +97,7 @@ const StepOne: React.FC = () => {
         />
 
         <Input
+          submitted={submitted}
           ref={lastNameRef}
           onBlur={() => handleBlur('lastName')}
           onChangeText={(value) => handleChangeText('lastName', value)}

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { StyleSheet, TextInput as TextInputProps } from 'react-native';
 import * as Yup from 'yup';
 
@@ -24,6 +24,8 @@ const FormSchema = Yup.object().shape({
 });
 
 const StepTwo: React.FC = () => {
+  const [submitted, setSubmitted] = useState(false);
+
   const { goToNextStep, setValidationSchema } = useSignUpStepper();
   const formRef = useRef<FormHandles>(null);
   const passwordRef = useRef<TextInputProps>(null);
@@ -40,6 +42,8 @@ const StepTwo: React.FC = () => {
         await goToNextStep(data);
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
+          setSubmitted(true);
+
           const errors = getValidationErrors(err);
 
           formRef.current?.setErrors(errors);
@@ -86,6 +90,7 @@ const StepTwo: React.FC = () => {
     <StepperContainer onNext={() => formRef.current?.submitForm()}>
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
+          submitted={submitted}
           autoFocus
           onBlur={() => handleBlur('email')}
           onChangeText={(value) => handleChangeText('email', value)}
@@ -101,6 +106,7 @@ const StepTwo: React.FC = () => {
         />
 
         <Input
+          submitted={submitted}
           ref={passwordRef}
           onBlur={() => handleBlur('password')}
           onChangeText={(value) => handleChangeText('password', value)}

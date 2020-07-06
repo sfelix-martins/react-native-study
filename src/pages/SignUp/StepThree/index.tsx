@@ -26,8 +26,16 @@ interface FormValues {
 const FormSchema = Yup.object().shape({
   site: Yup.string().url('The contact link must to be a valid url'),
   company: Yup.string().max(50, 'The company must have until 10 characters'),
-  areaCode: Yup.string().max(2).min(2).nullable(),
-  phone: Yup.string().max(9).min(9).nullable(),
+  areaCode: Yup.string().test(
+    'len',
+    'Invalid area code',
+    (val) => !val || val.toString().length === 2,
+  ),
+  phone: Yup.string().test(
+    'len',
+    'Invalid phone number',
+    (val) => !val || val.toString().length === 9,
+  ),
 });
 
 const StepThree: React.FC = () => {
@@ -39,6 +47,7 @@ const StepThree: React.FC = () => {
 
   const { openGlobalLoader, closeGlobalLoader } = useGlobalLoader();
 
+  const [submitted, setSubmitted] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [areaCodeTouched, setAreaCodeTouched] = useState(false);
   const [hasPhoneError, setHasPhoneError] = useState(false);
@@ -71,6 +80,8 @@ const StepThree: React.FC = () => {
         navigation.navigate('SignIn');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
+          setSubmitted(true);
+
           const errors = getValidationErrors(err);
 
           formRef.current?.setErrors(errors);
@@ -136,6 +147,7 @@ const StepThree: React.FC = () => {
       <Form style={styles.container} ref={formRef} onSubmit={nextStep}>
         <Input
           autoFocus
+          submitted={submitted}
           onBlur={() => handleBlur('site')}
           onChangeText={(value) => handleChangeText('site', value)}
           name="site"
@@ -150,6 +162,7 @@ const StepThree: React.FC = () => {
         />
         <Input
           ref={companyRef}
+          submitted={submitted}
           onBlur={() => handleBlur('company')}
           onChangeText={(value) => handleChangeText('company', value)}
           name="company"
@@ -164,6 +177,7 @@ const StepThree: React.FC = () => {
           <View style={styles.phoneAreaCode}>
             <Input
               ref={areaCodeRef}
+              submitted={submitted}
               showErrorMessage={false}
               name="areaCode"
               label="DDD"
@@ -189,6 +203,7 @@ const StepThree: React.FC = () => {
           <View style={styles.phoneNumber}>
             <Input
               maskType="cel-phone"
+              submitted={submitted}
               maskOptions={{
                 withDDD: false,
                 maskType: 'BRL',
@@ -200,7 +215,6 @@ const StepThree: React.FC = () => {
                   );
 
                   if (phoneValue.length === 0) {
-                    console.log(phoneValue);
                     areaCodeRef.current?.focus();
                   }
                 }
