@@ -193,6 +193,18 @@ const StepThree: React.FC = () => {
                 withDDD: false,
                 maskType: 'BRL',
               }}
+              onKeyPress={({ nativeEvent }) => {
+                if (nativeEvent.key === 'Backspace') {
+                  const phoneValue: string = formRef.current?.getFieldValue(
+                    'phone',
+                  );
+
+                  if (phoneValue.length === 0) {
+                    console.log(phoneValue);
+                    areaCodeRef.current?.focus();
+                  }
+                }
+              }}
               showErrorMessage={false}
               ref={phoneRef}
               onBlur={() => {
