@@ -10,3 +10,5 @@
 - Global Loader (API Context)
 - Toast (API Context)
 - Auth (API Context)
+- Button "Done" above keyboard (KeyboardAvoidingView + ScrollView)
+- Form validation (Yup)
